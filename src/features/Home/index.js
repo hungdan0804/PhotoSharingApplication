@@ -1,47 +1,57 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { getRandomImage, getSearchImage } from "../../../api";
 import HeaderHome from "../Home/Components/HeaderHome";
 import HeaderMainList from "../Home/Components/HeaderMainList";
 import { debounce } from "lodash";
 
+const MAX_ITEMS_PER_PAGE = 30;
+
 function index({ navigation }) {
   const [images, setImages] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState({ num: 1 });
+  const page = useRef({ num: 1, items: 20 }).current;
 
-  const handleOnChangeSearch = useCallback(async (searchTerm) => {
-    if (searchTerm !== "") {
+  console.log("render");
+
+  const handleOnChangeSearch = useCallback(
+    async (searchTerm) => {
+      setSearch(searchTerm);
+      page.num = 1;
+      page.items = 10;
       const data = await getSearchImage(searchTerm, page.num);
       setImages(data);
-      setSearch(searchTerm);
-    }
-  }, []);
+    },
+    [images]
+  );
 
   const handleOnRefresh = useCallback(async () => {
     setRefreshing(true);
-    console.log("refresh");
 
     const data = await getRandomImage();
     setImages(data);
     setRefreshing(false);
-  }, [refreshing]);
+  }, [images]);
 
   const handleOnLoadMore = useCallback(async () => {
-    setLoading(true);
-    if (search) {
-      setPage(++page.num);
-      const data = await getSearchImage(search, page.num);
-      setImages(data);
+    console.log("Load More !!!" + images);
+    const newData = [...images];
+    if (search !== "") {
+      console.log("string not null");
+      page.num += 1;
+      const data = await getSearchImage(search, page);
+      const res = newData.concat(...data);
+      console.log("data-length: " + res.length);
+      setImages(res);
     } else {
+      console.log("string null");
       const data = await getRandomImage();
-      const newData = [...images, ...data];
-      setImages(newData);
+      const res = newData.concat(...data);
+      setImages(res);
     }
-    setLoading(false);
-  }, [loading]);
+  }, [images]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,9 +59,9 @@ function index({ navigation }) {
       setImages(data);
     };
     if (images.length === 0) {
-      const res = fetchData();
+      fetchData();
     }
-  }, [images]);
+  }, []);
 
   const handleOnItemClick = useCallback((item) => {
     navigation.push("Item", { item });
@@ -65,7 +75,6 @@ function index({ navigation }) {
         handleOnItemClick={handleOnItemClick}
         refreshing={refreshing}
         onRefresh={handleOnRefresh}
-        loading={loading}
         onLoadingMore={handleOnLoadMore}
       />
     </View>

@@ -45,11 +45,11 @@ export const getRandomImage = async () => {
 
 export const getSearchImage = async (searchTerm, page) => {
   const { results } = await unsplash.search
-    .photos(searchTerm, 1, 10 * page, {
+    .photos(searchTerm, page.num, page.items, {
       orientation: "portrait",
-      color: "green",
     })
     .then(toJson);
+  if (!results) return null;
   const images = jsonToObject(results);
   return images;
 };

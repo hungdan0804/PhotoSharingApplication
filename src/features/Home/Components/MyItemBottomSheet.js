@@ -46,7 +46,7 @@ function MyItemBottomSheet({ item, animatedItem }) {
         </View>
       </View>
       {/* check Location*/}
-      {item.location.name && (
+      {item.location && (
         <View style={styles.lineContainer}>
           <View style={styles.itemContainer}>
             <MaterialCommunityIcons

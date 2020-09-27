@@ -7,4 +7,6 @@ export default {
   ic_name_camera: "camera",
   ic_name_map_marker: "map-marker",
   ic_name_arrow_left: "arrow-left",
+
+  ic_msg_load_more: "Load More",
 };

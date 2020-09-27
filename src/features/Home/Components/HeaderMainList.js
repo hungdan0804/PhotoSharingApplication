@@ -5,9 +5,12 @@ import {
   ActivityIndicator,
   SafeAreaView,
   FlatList,
+  Text,
 } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import colors from "../../../config/colors";
 import config from "../../../config/config";
+import string from "../../../config/string";
 import MyRenderItemList from "../Components/MyRenderItemList";
 
 function HeaderMainList({
@@ -15,7 +18,7 @@ function HeaderMainList({
   handleOnItemClick,
   refreshing,
   onRefresh,
-  loading,
+
   onLoadingMore,
 }) {
   return (
@@ -43,18 +46,12 @@ function HeaderMainList({
         }}
         nestedScrollEnabled={true}
         ListFooterComponent={() => {
-          if (!loading) {
-            return null;
-          }
           return (
-            <ActivityIndicator
-              color={colors.black}
-              size={config.height * 0.03}
-            />
+            <TouchableOpacity style={styles.btn_load} onPress={onLoadingMore}>
+              <Text style={styles.loadmore}>{string.ic_msg_load_more}</Text>
+            </TouchableOpacity>
           );
         }}
-        onEndReached={onLoadingMore}
-        onEndReachedThreshold={0.3}
       />
     </SafeAreaView>
   );
@@ -66,6 +63,23 @@ const styles = StyleSheet.create({
     // height: config.height * 0.9,//90% height screen
     flex: 1,
     backgroundColor: colors.white,
+  },
+  btn_load: {
+    width: config.width * 0.6,
+    height: config.height * 0.05,
+
+    borderRadius: 15,
+
+    backgroundColor: colors.opacity,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    margin: config.SPACING,
+  },
+  loadmore: {
+    fontSize: config.height * 0.02,
+    color: colors.white,
   },
 });
 
